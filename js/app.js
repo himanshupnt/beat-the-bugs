@@ -61,8 +61,8 @@ Player.prototype.update = function() {
 };
 
 Player.prototype.reset = function() {
-        player.x = 202.5;
-        player.y = 383;
+        this.x = 202.5;
+        this.y = 383;
 };
 
 Player.prototype.render = function() {
