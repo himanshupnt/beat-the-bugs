@@ -19,7 +19,7 @@ Enemy.prototype.checkCollision = function() {
         && player.x + 25 <= this.x + 88
         && player.y + 73 <= this.y + 135
         && player.x + 76 >= this.x + 11) {
-        console.log('Bam, try again!');
+//        console.log('Bam, try again!');
         player.reset();
     }
 };
@@ -33,6 +33,7 @@ Enemy.prototype.update = function(dt) {
     this.x = this.x + (this.speed * dt);
     
     // loop enemies to left side of canvas after reaching canvas.width
+
     if (this.x >= 505) {
         this.x = -150;
     }
@@ -72,15 +73,15 @@ Player.prototype.render = function() {
     // pass score as an argument to the increaseDifficulty function
     if (this.y + 30 <= 0) {        
         this.reset();
-        console.log('Win!');
+//        console.log('Win!');
 
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, 505, 171);
 
         score += 1;
         gameLevel += 1;
-        console.log('current score: ' + score + ', current level: ' + gameLevel);
-        increaseDifficulty(score);
+//      console.log('current score: ' + score + ', current level: ' + gameLevel);
+        this.increaseDifficulty(score);
 
     }
     this.displayScoreLevel(score, gameLevel);
@@ -100,7 +101,7 @@ Player.prototype.handleInput = function(keyPress) {
     if (keyPress == 'down') {
         this.y += this.speed - 20;
     }
-    console.log('keyPress is: ' + keyPress);
+//    console.log('keyPress is: ' + keyPress);
     // check if player runs into left, bottom, or right canvas walls
     // prevent player from moving beyond canvas wall boundaries
     if (this.y > 383 ) {
@@ -125,7 +126,7 @@ Player.prototype.displayScoreLevel = function(aScore, aLevel) {
 };
 
 // Increase number of enemies on screen based on player's score
-var increaseDifficulty = function(numEnemies) {
+Player.prototype.increaseDifficulty = function(numEnemies) {
     // remove all previous enemies on canvas
     allEnemies.length = 0;
 
