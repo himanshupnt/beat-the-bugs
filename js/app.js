@@ -12,6 +12,18 @@ var Enemy = function(x, y, speed, score, gameLevel) {
     this.sprite = 'images/enemy-bug.png';
 };
 
+Enemy.prototype.checkCollision = function() {
+    // check for collision between enemy and player
+    if (
+        player.y + 131 >= this.y + 90
+        && player.x + 25 <= this.x + 88
+        && player.y + 73 <= this.y + 135
+        && player.x + 76 >= this.x + 11) {
+        console.log('Bam, try again!');
+        player.reset();
+    }
+};
+
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
@@ -26,7 +38,7 @@ Enemy.prototype.update = function(dt) {
     }
 
     // Check for collision
-    checkCollision(this);
+    this.checkCollision();
 };
 
 // Draw the enemy on the screen, required method for game
@@ -48,26 +60,58 @@ Player.prototype.update = function() {
     
 };
 
+Player.prototype.reset = function() {
+        player.x = 202.5;
+        player.y = 383;
+};
+
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    // check for player reaching top of canvas and winning the game
+    // if player wins, add 1 to the score and level
+    // pass score as an argument to the increaseDifficulty function
+    if (this.y + 30 <= 0) {        
+        this.reset();
+        console.log('Win!');
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, 505, 171);
+
+        score += 1;
+        gameLevel += 1;
+        console.log('current score: ' + score + ', current level: ' + gameLevel);
+        increaseDifficulty(score);
+
+    }
     this.displayScoreLevel(score, gameLevel);
 
 };
 
 Player.prototype.handleInput = function(keyPress) {
     if (keyPress == 'left') {
-        this.x -= player.speed;
+        this.x -= this.speed;
     }
     if (keyPress == 'up') {
-        this.y -= player.speed - 20;
+        this.y -= this.speed - 20;
     }
     if (keyPress == 'right') {
-        this.x += player.speed;
+        this.x += this.speed;
     }
     if (keyPress == 'down') {
-        this.y += player.speed - 20;
+        this.y += this.speed - 20;
     }
     console.log('keyPress is: ' + keyPress);
+    // check if player runs into left, bottom, or right canvas walls
+    // prevent player from moving beyond canvas wall boundaries
+    if (this.y > 383 ) {
+        this.y = 383;
+    }
+    if (this.x > 402.5) {
+        this.x = 402.5;
+    }
+    if (this.x < 2.5) {
+        this.x = 2.5;
+    }
 };
 
 Player.prototype.displayScoreLevel = function(aScore, aLevel) {
@@ -80,83 +124,30 @@ Player.prototype.displayScoreLevel = function(aScore, aLevel) {
     document.body.insertBefore(scoreLevelDiv, firstCanvasTag[0]);
 };
 
-//// Display player's score
-//var displayScoreLevel = function(aScore, aLevel) {
-//    var canvas = document.getElementsByTagName('canvas');
-//    var firstCanvasTag = canvas[0];
-//
-//    // add player score and level to div element created
-//    scoreLevelDiv.innerHTML = 'Score: ' + aScore
-//        + ' / ' + 'Level: ' + aLevel;
-//    document.body.insertBefore(scoreLevelDiv, firstCanvasTag[0]);
-//};
+// Increase number of enemies on screen based on player's score
+var increaseDifficulty = function(numEnemies) {
+    // remove all previous enemies on canvas
+    allEnemies.length = 0;
 
-var checkCollision = function(anEnemy) {
-    // check for collision between enemy and player
-    if (
-        player.y + 131 >= anEnemy.y + 90
-        && player.x + 25 <= anEnemy.x + 88
-        && player.y + 73 <= anEnemy.y + 135
-        && player.x + 76 >= anEnemy.x + 11) {
-        console.log('Bam, try again!');
-        player.x = 202.5;
-        player.y = 383;
-    }
+    // load new set of enemies
+    for (var i = 0; i <= numEnemies; i++) {
+        var enemy = new Enemy(-150, Math.random() * 184 + 50, Math.random() * 256);
 
-    // check for player reaching top of canvas and winning the game
-    // if player wins, add 1 to the score and level
-    // pass score as an argument to the increaseDifficulty function
-    if (player.y + 63 <= 0) {        
-        player.x = 202.5;
-        player.y = 383;
-        console.log('Win!');
-
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, 505, 171);
-
-        score += 1;
-        gameLevel += 1;
-        console.log('current score: ' + score + ', current level: ' + gameLevel);
-        increaseDifficulty(score);
-
-    }
-    // check if player runs into left, bottom, or right canvas walls
-    // prevent player from moving beyond canvas wall boundaries
-    if (player.y > 383 ) {
-        player.y = 383;
-    }
-    if (player.x > 402.5) {
-        player.x = 402.5;
-    }
-    if (player.x < 2.5) {
-        player.x = 2.5;
+        allEnemies.push(enemy);
     }
 };
 
-    // Increase number of enemies on screen based on player's score
-    var increaseDifficulty = function(numEnemies) {
-        // remove all previous enemies on canvas
-        allEnemies.length = 0;
-
-        // load new set of enemies
-        for (var i = 0; i <= numEnemies; i++) {
-            var enemy = new Enemy(-150, Math.random() * 184 + 50, Math.random() * 256);
-
-            allEnemies.push(enemy);
-        }
-    };
-    
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 var allEnemies = [];
-var player = new Player(202.5, 383, 50, 0, 0);
+var player = new Player(202.5, 383, 50);
 var score = 0;
 var gameLevel = 1;
 var scoreLevelDiv = document.createElement('div');
-var enemy = new Enemy(-150, Math.random() * 184 + 50, Math.random() * 256);
+var enemy = new Enemy(-150, Math.random() * 184 + 50, Math.random() * 256, 0, 0);
 
 allEnemies.push(enemy);
 
