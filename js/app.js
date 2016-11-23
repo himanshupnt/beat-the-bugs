@@ -1,11 +1,12 @@
 // Enemies our player must avoid
-var Enemy = function(x, y, speed) {
+var Enemy = function(x, y, speed, score, gameLevel) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
     this.speed = speed;
     this.x = x;
     this.y = y;
-
+    this.score = 0;
+    this.gameLevel = 0;
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
@@ -21,7 +22,7 @@ Enemy.prototype.update = function(dt) {
     
     // loop enemies to left side of canvas after reaching canvas.width
     if (this.x >= 505) {
-        this.x = 0;
+        this.x = -150;
     }
 
     // Check for collision
@@ -45,32 +46,31 @@ var Player = function(x, y, speed) {
 
 Player.prototype.update = function() {
     
-}
+};
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    displayScoreLevel(score, gameLevel);
+    this.displayScoreLevel(score, gameLevel);
 
 };
 
 Player.prototype.handleInput = function(keyPress) {
     if (keyPress == 'left') {
-        player.x -= player.speed;
+        this.x -= player.speed;
     }
     if (keyPress == 'up') {
-        player.y -= player.speed - 20;
+        this.y -= player.speed - 20;
     }
     if (keyPress == 'right') {
-        player.x += player.speed;
+        this.x += player.speed;
     }
     if (keyPress == 'down') {
-        player.y += player.speed - 20;
+        this.y += player.speed - 20;
     }
     console.log('keyPress is: ' + keyPress);
 };
 
-// Display player's score
-var displayScoreLevel = function(aScore, aLevel) {
+Player.prototype.displayScoreLevel = function(aScore, aLevel) {
     var canvas = document.getElementsByTagName('canvas');
     var firstCanvasTag = canvas[0];
 
@@ -79,6 +79,17 @@ var displayScoreLevel = function(aScore, aLevel) {
         + ' / ' + 'Level: ' + aLevel;
     document.body.insertBefore(scoreLevelDiv, firstCanvasTag[0]);
 };
+
+//// Display player's score
+//var displayScoreLevel = function(aScore, aLevel) {
+//    var canvas = document.getElementsByTagName('canvas');
+//    var firstCanvasTag = canvas[0];
+//
+//    // add player score and level to div element created
+//    scoreLevelDiv.innerHTML = 'Score: ' + aScore
+//        + ' / ' + 'Level: ' + aLevel;
+//    document.body.insertBefore(scoreLevelDiv, firstCanvasTag[0]);
+//};
 
 var checkCollision = function(anEnemy) {
     // check for collision between enemy and player
@@ -129,7 +140,7 @@ var checkCollision = function(anEnemy) {
 
         // load new set of enemies
         for (var i = 0; i <= numEnemies; i++) {
-            var enemy = new Enemy(0, Math.random() * 184 + 50, Math.random() * 256);
+            var enemy = new Enemy(-150, Math.random() * 184 + 50, Math.random() * 256);
 
             allEnemies.push(enemy);
         }
@@ -141,11 +152,11 @@ var checkCollision = function(anEnemy) {
 // Place the player object in a variable called player
 
 var allEnemies = [];
-var player = new Player(202.5, 383, 50);
+var player = new Player(202.5, 383, 50, 0, 0);
 var score = 0;
 var gameLevel = 1;
 var scoreLevelDiv = document.createElement('div');
-var enemy = new Enemy(0, Math.random() * 184 + 50, Math.random() * 256);
+var enemy = new Enemy(-150, Math.random() * 184 + 50, Math.random() * 256);
 
 allEnemies.push(enemy);
 
